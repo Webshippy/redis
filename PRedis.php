@@ -41,6 +41,7 @@ class PRedis implements Redis
             'host' => $config['host'],
             'port' => $config['port'],
             'password' => $config['password'],
+            'database' => $config['database'],
             'path' => $config['path'],
             'async' => $config['async'],
             'persistent' => $config['persistent'],
@@ -59,7 +60,7 @@ class PRedis implements Redis
             // mixed eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
             return call_user_func_array([$this->redis, 'eval'], array_merge([$script, count($keys)], $keys, $args));
         } catch (PRedisServerException $e) {
-            throw new ServerException('eval command has failed', null, $e);
+            throw new ServerException('eval command has failed', 0, $e);
         }
     }
 
@@ -68,7 +69,7 @@ class PRedis implements Redis
         try {
             return $this->redis->zadd($key, [$value => $score]);
         } catch (PRedisServerException $e) {
-            throw new ServerException('zadd command has failed', null, $e);
+            throw new ServerException('zadd command has failed', 0, $e);
         }
     }
 
@@ -77,7 +78,7 @@ class PRedis implements Redis
         try {
             return $this->redis->zrem($key, [$value]);
         } catch (PRedisServerException $e) {
-            throw new ServerException('zrem command has failed', null, $e);
+            throw new ServerException('zrem command has failed', 0, $e);
         }
     }
 
@@ -86,7 +87,7 @@ class PRedis implements Redis
         try {
             return $this->redis->lpush($key, [$value]);
         } catch (PRedisServerException $e) {
-            throw new ServerException('lpush command has failed', null, $e);
+            throw new ServerException('lpush command has failed', 0, $e);
         }
     }
 
@@ -99,7 +100,7 @@ class PRedis implements Redis
 
             return null;
         } catch (PRedisServerException $e) {
-            throw new ServerException('brpop command has failed', null, $e);
+            throw new ServerException('brpop command has failed', 0, $e);
         }
     }
 
@@ -112,7 +113,7 @@ class PRedis implements Redis
 
             return null;
         } catch (PRedisServerException $e) {
-            throw new ServerException('rpop command has failed', null, $e);
+            throw new ServerException('rpop command has failed', 0, $e);
         }
     }
 
