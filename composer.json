@@ -1,5 +1,5 @@
 {
-    "name": "erosakos/redis",
+    "name": "enqueue/redis",
     "type": "library",
     "description": "Message Queue Redis Transport",
     "keywords": ["messaging", "queue", "redis"],
