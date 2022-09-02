@@ -110,10 +110,10 @@ class RedisConnectionFactory implements ConnectionFactory
 
     private function parseDsn(string $dsn): array
     {
-        $dsn = new Dsn($dsn);
+        $dsn = Dsn::parseFirst($dsn);
 
         $supportedSchemes = ['redis', 'rediss', 'tcp', 'tls', 'unix'];
-        if (false == in_array($dsn->getSchemeProtocol(), $supportedSchemes, true)) {
+        if (!in_array($dsn->getSchemeProtocol(), $supportedSchemes, true)) {
             throw new \LogicException(sprintf(
                 'The given scheme protocol "%s" is not supported. It must be one of "%s"',
                 $dsn->getSchemeProtocol(),
@@ -121,7 +121,7 @@ class RedisConnectionFactory implements ConnectionFactory
             ));
         }
 
-        $database = $dsn->getInt('database');
+        $database = $dsn->getDecimal('database');
 
         // try use path as database name if not set.
         if (null === $database && 'unix' !== $dsn->getSchemeProtocol() && null !== $dsn->getPath()) {
