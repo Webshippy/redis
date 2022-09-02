@@ -102,8 +102,6 @@ class RedisConsumer implements Consumer
         $this->acknowledge($message);
 
         if ($requeue) {
-            $message = $this->getContext()->getSerializer()->toMessage($message->getReservedKey());
-            $message->setHeader('attempts', 0);
 
             if ($message->getTimeToLive()) {
                 $message->setHeader('expires_at', time() + $message->getTimeToLive());

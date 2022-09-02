@@ -92,7 +92,7 @@ class RedisConsumerTest extends \PHPUnit\Framework\TestCase
         $redisMock
             ->expects($this->once())
             ->method('lpush')
-            ->with('aQueue', '{"body":"text","properties":[],"headers":{"attempts":0}}')
+            ->with('aQueue', '{"body":"text","properties":[],"headers":[]}')
             ->willReturn(1)
         ;
 
