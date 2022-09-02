@@ -87,10 +87,10 @@ class RedisConnectionFactory implements ConnectionFactory
         if ($this->config['lazy']) {
             return new RedisContext(function () {
                 return $this->createRedis();
-            }, $this->config['redelivery_delay']);
+            }, (int) $this->config['redelivery_delay']);
         }
 
-        return new RedisContext($this->createRedis(), $this->config['redelivery_delay']);
+        return new RedisContext($this->createRedis(), (int) $this->config['redelivery_delay']);
     }
 
     private function createRedis(): Redis
@@ -110,18 +110,14 @@ class RedisConnectionFactory implements ConnectionFactory
 
     private function parseDsn(string $dsn): array
     {
-        $dsn = new Dsn($dsn);
+        $dsn = Dsn::parseFirst($dsn);
 
         $supportedSchemes = ['redis', 'rediss', 'tcp', 'tls', 'unix'];
         if (false == in_array($dsn->getSchemeProtocol(), $supportedSchemes, true)) {
-            throw new \LogicException(sprintf(
-                'The given scheme protocol "%s" is not supported. It must be one of "%s"',
-                $dsn->getSchemeProtocol(),
-                implode('", "', $supportedSchemes)
-            ));
+            throw new \LogicException(sprintf('The given scheme protocol "%s" is not supported. It must be one of "%s"', $dsn->getSchemeProtocol(), implode('", "', $supportedSchemes)));
         }
 
-        $database = $dsn->getInt('database');
+        $database = $dsn->getDecimal('database');
 
         // try use path as database name if not set.
         if (null === $database && 'unix' !== $dsn->getSchemeProtocol() && null !== $dsn->getPath()) {
@@ -135,7 +131,7 @@ class RedisConnectionFactory implements ConnectionFactory
             'port' => $dsn->getPort(),
             'path' => $dsn->getPath(),
             'database' => $database,
-            'password' => $dsn->getPassword(),
+            'password' => $dsn->getPassword() ?: $dsn->getUser() ?: $dsn->getString('password'),
             'async' => $dsn->getBool('async'),
             'persistent' => $dsn->getBool('persistent'),
             'timeout' => $dsn->getFloat('timeout'),

@@ -7,6 +7,7 @@ namespace Enqueue\Redis;
 use Interop\Queue\Destination;
 use Interop\Queue\Exception\InvalidDestinationException;
 use Interop\Queue\Exception\InvalidMessageException;
+use Interop\Queue\Exception\PriorityNotSupportedException;
 use Interop\Queue\Message;
 use Interop\Queue\Producer;
 use Ramsey\Uuid\Uuid;
@@ -63,7 +64,7 @@ class RedisProducer implements Producer
         $payload = $this->context->getSerializer()->toString($message);
 
         if ($message->getDeliveryDelay()) {
-            $deliveryAt = time() + $message->getDeliveryDelay();
+            $deliveryAt = time() + $message->getDeliveryDelay() / 1000;
             $this->context->getRedis()->zadd($destination->getName().':delayed', $payload, $deliveryAt);
         } else {
             $this->context->getRedis()->lpush($destination->getName(), $payload);
@@ -94,7 +95,7 @@ class RedisProducer implements Producer
             return $this;
         }
 
-        throw new \LogicException('Not implemented');
+        throw PriorityNotSupportedException::providerDoestNotSupportIt();
     }
 
     public function getPriority(): ?int

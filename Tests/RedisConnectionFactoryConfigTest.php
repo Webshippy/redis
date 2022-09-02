@@ -5,6 +5,7 @@ namespace Enqueue\Redis\Tests;
 use Enqueue\Redis\Redis;
 use Enqueue\Redis\RedisConnectionFactory;
 use Enqueue\Test\ClassExtensionTrait;
+use Enqueue\Test\ReadAttributeTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 class RedisConnectionFactoryConfigTest extends TestCase
 {
     use ClassExtensionTrait;
+    use ReadAttributeTrait;
 
     public function testThrowNeitherArrayStringNorNullGivenAsConfig()
     {
@@ -300,6 +302,50 @@ class RedisConnectionFactoryConfigTest extends TestCase
                 'host' => 'ec2-111-1-1-1.compute-1.amazonaws.com',
                 'scheme' => 'redis',
                 'port' => 111,
+                'timeout' => 5.,
+                'database' => null,
+                'password' => 'asdfqwer1234asdf',
+                'scheme_extensions' => [],
+                'path' => null,
+                'async' => false,
+                'persistent' => false,
+                'lazy' => true,
+                'read_write_timeout' => null,
+                'predis_options' => null,
+                'ssl' => null,
+                'redelivery_delay' => 300,
+            ],
+        ];
+
+        // password as user
+        yield [
+            'redis://asdfqwer1234asdf@foo',
+            [
+                'host' => 'foo',
+                'scheme' => 'redis',
+                'port' => 6379,
+                'timeout' => 5.,
+                'database' => null,
+                'password' => 'asdfqwer1234asdf',
+                'scheme_extensions' => [],
+                'path' => null,
+                'async' => false,
+                'persistent' => false,
+                'lazy' => true,
+                'read_write_timeout' => null,
+                'predis_options' => null,
+                'ssl' => null,
+                'redelivery_delay' => 300,
+            ],
+        ];
+
+        // password as query parameter
+        yield [
+            'redis:?password=asdfqwer1234asdf',
+            [
+                'host' => '127.0.0.1',
+                'scheme' => 'redis',
+                'port' => 6379,
                 'timeout' => 5.,
                 'database' => null,
                 'password' => 'asdfqwer1234asdf',
